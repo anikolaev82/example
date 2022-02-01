@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: master
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Deploy in yandex cloud. Serverless container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build, tag, and push image to Yandex Cloud Container Registry
+        env:
+          CR_REGISTRY: ID_CR.YANDEX
+          CR_REPO: NAME_REPOSITORY
+          IMAGE_TAG: latest
+        run: |
+          docker login --username oauth --password ${{secrets.YC_OAUTH_TOKEN}} cr.yandex 
+          docker build -t cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG . 
+          docker push cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
